@@ -13,7 +13,6 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     @IBOutlet weak var tableView: UITableView!
     
-    var posts = [Post]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,16 +22,9 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         self.tableView.dataSource = self
         //tableView.estimatedRowHeight = 82
         
-        var post = Post(imgPath: "", title: "Post 1", description: "Post1 Description")
-        var post2 = Post(imgPath: "", title: "Post 2", description: "Post2 Description")
-        var post3 = Post(imgPath: "", title: "Post 3", description: "Post3 Description")
+        DataService.instatnce.loadPosts()
         
-        posts.append(post)
-        posts.append(post2)
-        posts.append(post3)
-        
-        tableView.reloadData()
-        
+       NSNotificationCenter.defaultCenter().addObserver(self, selector: "onPostsLoaded", name: "postsLoaded", object: nil)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -40,12 +32,12 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return posts.count
+        return DataService.instatnce.loadedPosts.count
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         
-        let post = posts[indexPath.row]
+        let post = DataService.instatnce.loadedPosts[indexPath.row]
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("PostCell") as? PostCell {
             
@@ -65,6 +57,10 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         
         return 82.0
+    }
+    
+    func onPostsLoaded (){
+        tableView.reloadData()
     }
     
 //    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
